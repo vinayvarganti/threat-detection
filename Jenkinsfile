@@ -1,13 +1,12 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:18'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
     stages {
-
-        stage('Clone Repository') {
-            steps {
-                echo 'Repository already cloned by Jenkins job configuration'
-            }
-        }
 
         stage('Install Dependencies') {
             steps {
@@ -23,7 +22,7 @@ pipeline {
 
         stage('Container Scan') {
             steps {
-                sh 'trivy image devsecops-demo > image-scan.txt'
+                sh 'docker run --rm aquasec/trivy image devsecops-demo > image-scan.txt'
             }
         }
 
@@ -45,3 +44,4 @@ pipeline {
         }
     }
 }
+
